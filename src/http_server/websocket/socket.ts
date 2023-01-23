@@ -94,7 +94,7 @@ wss.on('connection', function connection(ws) {
 
         const base64 = image.data.toString('base64');
         console.log(base64);
-        ws.send(command);
+        ws.send(`${command} ${image.data}`);
 
         break;
       }
