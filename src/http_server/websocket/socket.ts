@@ -9,12 +9,13 @@ import {
   straightTo,
   Point,
   Button,
+  Region,
+  screen,
 } from '@nut-tree/nut-js';
-import { webSocketParser } from './parser';
-import { drawSquare } from './draw_square';
-import { drawRectangle } from './draw_rectangle';
+import { webSocketParser } from './parser.js';
+import { drawSquare } from './draw_square.js';
+import { drawRectangle } from './draw_rectangle.js';
 const WS_PORT = 8080;
-console.log('arr');
 
 export const wss = new WebSocketServer({ port: WS_PORT });
 
@@ -85,6 +86,24 @@ wss.on('connection', function connection(ws) {
         ws.send(command);
         break;
       }
+
+      case 'prnt_scrn': {
+        const pos = await mouse.getPosition();
+        const createRegion = new Region(pos.x, pos.y, 200, 200);
+        const image = await screen.grabRegion(createRegion);
+
+        const base64 = image.data.toString('base64');
+        console.log(base64);
+        ws.send(command);
+
+        break;
+      }
+      default:
+        console.log(`command undefined`);
     }
+  });
+
+  ws.on('close', () => {
+    console.log('WebSocket  was closed');
   });
 });
