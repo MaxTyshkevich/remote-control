@@ -1,5 +1,12 @@
 import { WebSocketServer } from 'ws';
-import { mouse, left, right, up, down } from '@nut-tree/nut-js';
+import {
+  mouse,
+  left,
+  right,
+  up,
+  down,
+  getActiveWindow,
+} from '@nut-tree/nut-js';
 
 const WS_PORT = 8080;
 
@@ -17,33 +24,45 @@ wss.on('connection', function connection(ws) {
 
     switch (command) {
       case 'mouse_left': {
-        await mouse.move(left(size));
+        await mouse.move(left(size as number));
         ws.send(command);
         break;
       }
       case 'mouse_up': {
-        await mouse.move(up(size));
+        await mouse.move(up(size as number));
         ws.send(command);
         break;
       }
       case 'mouse_right': {
-        await mouse.move(right(size));
+        await mouse.move(right(size as number));
         ws.send(command);
         break;
       }
       case 'mouse_down': {
-        await mouse.move(down(size));
+        await mouse.move(down(size as number));
         ws.send(command);
         break;
       }
       case 'mouse_position': {
         const pos = await mouse.getPosition();
-        const posString = pos.toString();
+        const result = `${command} ${pos.x} px,${pos.y} px`;
+        console.log(result);
+        ws.send(result);
+        break;
+      }
 
-        console.log(`${command}: x:${x}, y:${y}`);
-        ws.send(`${command}: x:${x}, y:${y}`);
+      case 'draw_circle': {
+        const pos = await mouse.getPosition();
+        const result = `${command} ${pos.x} px,${pos.y} px`;
+        console.log(result);
+        ws.send(result);
         break;
       }
     }
+
+    const windowRef = await getActiveWindow();
+    const title = await windowRef.title;
+    const region = await windowRef.region;
+    console.log(title, region);
   });
 });
